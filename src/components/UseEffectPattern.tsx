@@ -7,20 +7,19 @@ type Props = {
 }
 export const UseEffectPattern = ({ flag, onlyOnce, onIntersecting }: Props) => {
   const targetRef = useRef<HTMLDivElement>(null)
-  const isIntersectingRef = useRef(false)
+  const intersectedRef = useRef(false)
 
   useEffect(() => {
     console.log('handle Subscribe (useEffect)')
-    if (!targetRef.current) return
+    if (!targetRef.current || (intersectedRef.current && onlyOnce)) return
 
     const target = targetRef.current
 
     const callback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          isIntersectingRef.current = true
+          intersectedRef.current = true
           if (onIntersecting) onIntersecting(flag)
-          if (onlyOnce) observer.unobserve(target)
         }
       })
     }
@@ -30,6 +29,7 @@ export const UseEffectPattern = ({ flag, onlyOnce, onIntersecting }: Props) => {
     return () => {
       observer.unobserve(target)
     }
+    // NOTE: 依存配列を空にすることで交差時の無限ループは防げるが、そうすると初回描画時のstateの状態でしか評価できなくなる
   }, [flag, onIntersecting, onlyOnce])
 
   return (

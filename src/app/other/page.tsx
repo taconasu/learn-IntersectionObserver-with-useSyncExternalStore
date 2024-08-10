@@ -8,14 +8,17 @@ export default function Home() {
   const [enabledIntersection, setEnabledIntersection] = useState(false)
   const [onlyOnce, setOnlyOnce] = useState(false)
 
-  const handleOnIntersecting = useCallback((state: boolean) => {
-    console.log('🚀 Enabled Intersection is', state)
-  }, [])
+  // useEffectだとうまくいかないパターン
+  const [count, setCount] = useState(0)
+  const handleOnIntersectingCount = useCallback(() => {
+    console.log('🐙 Intersecting times:', count)
+    setCount((prev) => prev + 1)
+  }, [count])
 
   return (
     <main className="flex flex-col">
       <div className="flex flex-col gap-4 items-center justify-center h-svh p-24 mb-11">
-        <h1>Hello World!</h1>
+        <h1>useEffectだとうまくいかないパターン</h1>
         <p>
           enabled intersection is{' '}
           {enabledIntersection ? 'true（onIntersectingを実行します）' : 'false（onIntersectingを実行しません）'}
@@ -34,16 +37,15 @@ export default function Home() {
           toggle only once!
         </button>
       </div>
-      {/* useSyncExternalStoreを試したいコンテンツ */}
       <UseSyncExternalStorePattern
         flag={enabledIntersection}
         onlyOnce={onlyOnce}
-        onIntersecting={enabledIntersection ? handleOnIntersecting : undefined}
+        onIntersecting={enabledIntersection ? handleOnIntersectingCount : undefined}
       />
       <UseEffectPattern
         flag={enabledIntersection}
         onlyOnce={onlyOnce}
-        onIntersecting={enabledIntersection ? handleOnIntersecting : undefined}
+        onIntersecting={enabledIntersection ? handleOnIntersectingCount : undefined}
       />
     </main>
   )
