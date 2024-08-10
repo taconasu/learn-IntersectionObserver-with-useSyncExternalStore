@@ -21,46 +21,27 @@ Web APIのサブスクライブ（addEventListener）なども想定して実装
 
 本来はストアを取り回す用途であり、IntersectionObserverのように交差処理が実行されるタイミングでそのコンポーネントの最新のステートの情報を参照する用途で使うのは若干エッジケースな使い方ではありそうだが、使えそうだったので今回はこれで利用してみる
 
-## やりたいこと
+## vs useEffect
 
-今回は以下のような動作を目指す
+交差時に実行するハンドラがstateの更新を伴わないような場合はuseEffectとuseSyncExternalStoreの間に大きな差はない🐈‍⬛  
+重要な差として、useEffectは「ハンドラの再評価のたびにIntersectionObserverのインスタンスを生成しなおす」のに対し、  
+useSyncExternalStoreは「ハンドラの更新では監視状況に変化が生じない（インスタンスの再生成を伴わない）」といった違いがある
 
-- 子コンポーネントがviewportに入った時に処理を実行する
-  - 子コンポーネントがviewportから外れた時には何もしない
-- `IntersectionObserver#observe`のタイミングでのみ関数を評価する
-  - 初回レンダリング時などにgetSnapshotが実行されないようにする
-  - ストアを参照する用途のuseSyncExternalStoreの本来の使い方ではなさそうだが...
+useEffectによる監視時に問題となるケースは、**ハンドラ内の処理によってハンドラの再評価が発生する**パターンであり、この場合はuseEffectパターンの要素がviewportに入った時に更新→再評価→更新...という感じで交差中に無限ループが発生してしまう
 
-## 構成
+## Setup
 
-今回のサンプル実装では2つのコンポーネントのみ利用する
+```sh
+# setup corepack
+corepack enable
+corepack prepare --activate
 
-### ページ（親）コンポーネント
+# install packages
+pnpm i
+```
 
-[Page](https://github.com/taconasu/learn-IntersectionObserver-with-useSyncExternalStore/blob/main/src/app/page.tsx)
+## development
 
-Boolean型の状態をもつローカルステートと、子コンポーネントの交差時に実行するハンドラを定義した親コンポーネント
-
-### 子コンポーネント
-
-[TestContent](https://github.com/taconasu/learn-IntersectionObserver-with-useSyncExternalStore/blob/main/src/components/TestContent.tsx)
-
-`useSyncExternalStore`を用いて`IntersectionObserver`の監視処理を行っているコンポーネント  
-このコンポーネントがviewportに入った時に親コンポーネントから受け渡された交差時に実行するためのハンドラが処理される
-
-## 実装
-
-TestContentで`useSyncExternalStore`を実行し、サブスクライブ関数とスナップショット取得関数を引数に渡す  
-それぞれは以下のような実装をする
-
-- subscribe
-  - IntersectionObserverインスタンスを作成し、targetとなるDOMを監視する
-  - 監視している要素がviewportに入ったらsubscribe関数の引数として受け取るcallbackを実行する
-    - これによってgetSnapshotが評価される
-  - callback実行時、viewportに入ったことを評価するための`isIntersecting`フラグ（ref）を **true** にする
-- getSnapshot
-  - viewportに入ったことを評価するための`isIntersecting`フラグ（ref）が **true** の場合のみ処理を実行する
-    - こうすることで、初回レンダリング時などで処理が実行されないようにしている
-  - 親コンポーネントから渡されたonIntersecting関数を実行する
-  - 実行が完了したら`isIntersecting`フラグ（ref）を **false** にする
-    - 次回以降の交差時に処理を実行できるようにするため
+```sh
+pnpm dev
+```

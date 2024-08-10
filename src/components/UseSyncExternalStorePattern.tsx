@@ -7,7 +7,7 @@ type Props = {
   onlyOnce?: boolean
   onIntersecting?: (state: boolean) => void
 }
-export const TestContent = ({ flag, onlyOnce = false, onIntersecting }: Props) => {
+export const UseSyncExternalStorePattern = ({ flag, onlyOnce = false, onIntersecting }: Props) => {
   const targetRef = useRef<HTMLDivElement>(null)
   const isIntersectingRef = useRef(false)
 

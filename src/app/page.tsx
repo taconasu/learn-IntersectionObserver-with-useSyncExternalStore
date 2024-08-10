@@ -1,7 +1,7 @@
 'use client'
 
 import { UseEffectPattern } from '@/components/UseEffectPattern'
-import { TestContent } from '@/components/TestContent'
+import { UseSyncExternalStorePattern } from '@/components/UseSyncExternalStorePattern'
 import { useCallback, useState } from 'react'
 
 export default function Home() {
@@ -11,6 +11,13 @@ export default function Home() {
   const handleOnIntersecting = useCallback((state: boolean) => {
     console.log('🚀 Enabled Intersection is', state)
   }, [])
+
+  // useEffectだとうまくいかないパターン
+  const [count, setCount] = useState(0)
+  const handleOnIntersectingCount = useCallback(() => {
+    console.log('🐙 Intersecting times:', count)
+    setCount((prev) => prev + 1)
+  }, [count])
 
   return (
     <main className="flex flex-col">
@@ -35,7 +42,7 @@ export default function Home() {
         </button>
       </div>
       {/* useSyncExternalStoreを試したいコンテンツ */}
-      <TestContent
+      <UseSyncExternalStorePattern
         flag={enabledIntersection}
         onlyOnce={onlyOnce}
         onIntersecting={enabledIntersection ? handleOnIntersecting : undefined}
@@ -44,6 +51,19 @@ export default function Home() {
         flag={enabledIntersection}
         onlyOnce={onlyOnce}
         onIntersecting={enabledIntersection ? handleOnIntersecting : undefined}
+      />
+      <p>
+        以下はハンドラ内の処理によってonIntersecting関数が再評価される場合（useEffectのパターンが交差するとハンドラが連続してコールされる）
+      </p>
+      <UseSyncExternalStorePattern
+        flag={enabledIntersection}
+        onlyOnce={onlyOnce}
+        onIntersecting={enabledIntersection ? handleOnIntersectingCount : undefined}
+      />
+      <UseEffectPattern
+        flag={enabledIntersection}
+        onlyOnce={onlyOnce}
+        onIntersecting={enabledIntersection ? handleOnIntersectingCount : undefined}
       />
     </main>
   )
