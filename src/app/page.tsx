@@ -1,5 +1,6 @@
 'use client'
 
+import { UseEffectPattern } from '@/components/UseEffectPattern'
 import { TestContent } from '@/components/TestContent'
 import { useCallback, useState } from 'react'
 
@@ -35,6 +36,11 @@ export default function Home() {
       </div>
       {/* useSyncExternalStoreを試したいコンテンツ */}
       <TestContent
+        flag={enabledIntersection}
+        onlyOnce={onlyOnce}
+        onIntersecting={enabledIntersection ? handleOnIntersecting : undefined}
+      />
+      <UseEffectPattern
         flag={enabledIntersection}
         onlyOnce={onlyOnce}
         onIntersecting={enabledIntersection ? handleOnIntersecting : undefined}

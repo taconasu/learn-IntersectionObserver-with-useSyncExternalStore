@@ -13,7 +13,7 @@ export const TestContent = ({ flag, onlyOnce = false, onIntersecting }: Props) =
 
   const subscribe = useCallback(
     (callback: () => void) => {
-      console.log('handle Subscribe')
+      console.log('handle Subscribe (useSyncExternalStore)')
       if (!targetRef.current) return () => {}
 
       const target = targetRef.current
@@ -39,7 +39,7 @@ export const TestContent = ({ flag, onlyOnce = false, onIntersecting }: Props) =
 
   const getSnapshot = () => {
     if (!isIntersectingRef.current) return
-    console.log('Run getSnapshot')
+    console.log('Run getSnapshot（useSyncExternalStore）')
 
     if (onIntersecting) onIntersecting(flag)
 
@@ -50,7 +50,7 @@ export const TestContent = ({ flag, onlyOnce = false, onIntersecting }: Props) =
 
   return (
     <div ref={targetRef} className="bg-violet-300 p-4">
-      この要素がviewportに入ると、onIntersectingが実行されます
+      この要素がviewportに入ると、onIntersectingが実行されます（useSyncExternalStore pattern）
       <br />
       onlyOnceがtrueの場合、一度だけ実行されます
       <br />
