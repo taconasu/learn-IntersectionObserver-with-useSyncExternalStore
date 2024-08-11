@@ -21,8 +21,11 @@ export default function RootLayout({
         <Link href="/" className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-6">
           サンプルコード
         </Link>
-        <Link href="/other" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+        <Link href="/other" className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-6">
           useEffectだと難しいサンプルコード
+        </Link>
+        <Link href="/use-intersection-hooks" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+          useIntersection hooksを用いたサンプルコード
         </Link>
         {children}
       </body>
